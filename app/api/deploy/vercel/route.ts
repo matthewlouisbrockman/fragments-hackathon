@@ -40,13 +40,93 @@ export async function POST(req: Request) {
 
   const name = normalizeName(body.name)
   const code = body.code as string
+  const filePath =
+    typeof body.filePath === 'string' && body.filePath.trim().length > 0
+      ? body.filePath.trim().replace(/^\/+/, '')
+      : 'pages/index.js'
+  const isTypeScript =
+    filePath.endsWith('.ts') || filePath.endsWith('.tsx') || filePath.includes('.ts.')
   const message = body.message as string | undefined
-  const projectId = body.projectId as string | undefined
+  const projectId =
+    (body.projectId as string | undefined) ||
+    process.env.VERCEL_PROJECT_ID ||
+    undefined
 
   try {
     const result = await Sandbox.deployToVercel({
       name,
       code,
+      files: [
+        {
+          file: 'package.json',
+          data: JSON.stringify({
+            name: 'fragment-deployment',
+            version: '1.0.0',
+            private: true,
+            scripts: {
+              dev: 'next dev',
+              build: 'next build',
+              start: 'next start',
+            },
+            dependencies: {
+              next: '14.2.15',
+              react: '18.3.1',
+              'react-dom': '18.3.1',
+              ...(isTypeScript
+                ? {
+                    typescript: '^5.5.4',
+                    '@types/react': '^18.3.12',
+                    '@types/node': '^22.2.0',
+                    '@types/react-dom': '^18.3.0',
+                  }
+                : {}),
+            },
+          }),
+        },
+        ...(isTypeScript
+          ? [
+              {
+                file: 'tsconfig.json',
+                data: JSON.stringify(
+                  {
+                    compilerOptions: {
+                      target: 'ESNext',
+                      lib: ['dom', 'dom.iterable', 'esnext'],
+                      allowJs: true,
+                      skipLibCheck: true,
+                      strict: true,
+                      noEmit: true,
+                      esModuleInterop: true,
+                      module: 'esnext',
+                      moduleResolution: 'bundler',
+                      resolveJsonModule: true,
+                      isolatedModules: true,
+                      jsx: 'preserve',
+                    },
+                    include: [
+                      'next-env.d.ts',
+                      '**/*.ts',
+                      '**/*.tsx',
+                      '**/*.js',
+                      '**/*.jsx',
+                    ],
+                    exclude: ['node_modules'],
+                  },
+                  null,
+                  2,
+                ),
+              },
+              {
+                file: 'next-env.d.ts',
+                data: "/// <reference types='next' />\n/// <reference types='next/image-types/global' />\n",
+              },
+            ]
+          : []),
+        {
+          file: filePath || 'pages/index.js',
+          data: code,
+        },
+      ],
       message,
       vercelToken,
       teamId: vercelTeamId,

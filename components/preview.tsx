@@ -113,6 +113,7 @@ export function Preview({
                 <DeployToVercelButton
                   code={fragment.code}
                   name={vercelName}
+                  filePath={fragment.file_path || 'pages/index.js'}
                   message={fragment.description || undefined}
                 />
               )}

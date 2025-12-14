@@ -14,12 +14,14 @@ import { Loader2 } from 'lucide-react'
 type DeployToVercelButtonProps = {
   code: string
   name: string
+  filePath?: string
   message?: string
 }
 
 export function DeployToVercelButton({
   code,
   name,
+  filePath,
   message,
 }: DeployToVercelButtonProps) {
   const [deploymentUrl, setDeploymentUrl] = useState<string | null>(null)
@@ -39,6 +41,7 @@ export function DeployToVercelButton({
       body: JSON.stringify({
         code,
         name,
+        filePath,
         message,
       }),
     })
