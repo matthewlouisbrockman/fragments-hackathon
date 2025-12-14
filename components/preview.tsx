@@ -101,6 +101,20 @@ export function Preview({
           </div>
           {result && (
             <div className="flex items-center justify-end gap-2">
+              <Button
+                asChild
+                variant="secondary"
+                size="sm"
+                className="hidden md:inline-flex"
+              >
+                <a
+                  href="https://vercel.com/new"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Deploy to Vercel
+                </a>
+              </Button>
               {isLinkAvailable && (
                 <DeployDialog
                   url={(result as ExecutionResultWeb).url!}
