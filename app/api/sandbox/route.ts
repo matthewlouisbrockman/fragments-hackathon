@@ -24,6 +24,7 @@ export async function POST(req: Request) {
 
   // Create an interpreter or a sandbox
   const sbx = await Sandbox.create(fragment.template, {
+    secure: false,
     metadata: {
       template: fragment.template,
       userID: userID ?? '',

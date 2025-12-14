@@ -19,7 +19,7 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@e2b/code-interpreter": ["../code-interpreter-add-tools/js/src"]
+      "@e2b/code-interpreter": ["../code-interpreter-add-tools/js/dist"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
