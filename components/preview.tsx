@@ -1,4 +1,5 @@
 import { DeployDialog } from './deploy-dialog'
+import { DeployToVercelButton } from './deploy-vercel-button'
 import { FragmentCode } from './fragment-code'
 import { FragmentPreview } from './fragment-preview'
 import { Button } from '@/components/ui/button'
@@ -44,6 +45,13 @@ export function Preview({
   const isLinkAvailable =
     result?.template &&
     getTemplateId(result?.template!) !== 'code-interpreter-v1'
+
+  const vercelName =
+    fragment?.title
+      ?.toLowerCase()
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .replace(/-+/g, '-') || `fragment-${result?.sbxId || 'preview'}`
 
   return (
     <div className="absolute md:relative z-10 top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover h-full w-full overflow-auto">
@@ -101,20 +109,13 @@ export function Preview({
           </div>
           {result && (
             <div className="flex items-center justify-end gap-2">
-              <Button
-                asChild
-                variant="secondary"
-                size="sm"
-                className="hidden md:inline-flex"
-              >
-                <a
-                  href="https://vercel.com/new"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Deploy to Vercel
-                </a>
-              </Button>
+              {fragment?.code && (
+                <DeployToVercelButton
+                  code={fragment.code}
+                  name={vercelName}
+                  message={fragment.description || undefined}
+                />
+              )}
               {isLinkAvailable && (
                 <DeployDialog
                   url={(result as ExecutionResultWeb).url!}
